@@ -17,50 +17,11 @@ def find_file(scores_files, user_input):
             return filename
     return None
 
-# Configuration
-#date_data = 'weekly_annotations.json'  # Ensure this is the correct file name
-
-# WEEKLY_GOAL = 200
-#
-# def ensure_file_exists():
-#     if not os.path.exists(date_data):
-#         data = {'start_date': datetime.now().strftime('%Y-%m-%d'), 'annotations_completed': 0}
-#         with open(date_data, 'w') as file:
-#             json.dump(data, file)
-#
-# def read_data():
-#     ensure_file_exists()
-#     with open(date_data, 'r') as file:
-#         return json.load(file)
-#
-# def write_data(data):
-#     with open(date_data, 'w') as file:
-#         json.dump(data, file)
-#
-# def update_annotation_count(change):
-#     data = read_data()
-#     data['annotations_completed'] += change
-#     write_data(data)
-#     display_weekly_progress()
-#
-# def increment_annotation():
-#     """Call this function when a new label is added."""
-#     update_annotation_count(1)
-#
-# def decrement_annotation():
-#     """Call this function when a label is removed."""
-#     update_annotation_count(-1)
-#
-# def display_weekly_progress():
-#     data = read_data()
-#     annotations_remaining = WEEKLY_GOAL - data['annotations_completed']
-#     print(f"{Fore.RED}Annotations remaining this week: {annotations_remaining} out of {WEEKLY_GOAL}")
-
 
 # Load the Excel file
-filename = 'shuffled_unlabeled.xlsx'
+filename = 'T2_Data.xlsx'
 #df = pd.read_excel(filename)
-df = pd.read_excel(filename).iloc[1200:1401]
+df = pd.read_excel(filename)
 scores_files = glob.glob('*_scores.xlsx')
 
 
@@ -82,13 +43,13 @@ if scores_files:
                         existing_df = pd.read_excel(selected_file)
                         last_sentence = existing_df.iloc[-1]['Sentence']
                         # Find this sentence in the shuffled DataFrame
-                        start_index = df[df.eq(last_sentence).any(1)].index[0] + 1
+                        start_index = df[df.iloc[:, 1].eq(last_sentence)].index[0] + 1
                         break
                     else:
                         existing_df = pd.DataFrame(columns=['Sentence', 'Score'])
                         start_index = 0
                         initials = input(Fore.CYAN + "Enter your initials to create a new annotation file: ")
-                        selected_file = initials + '_scores.xlsx'
+                        selected_file = initials + '_T2_scores.xlsx'
                         break
                     # Proceed with operations on the selected_file
                 else:
@@ -99,33 +60,12 @@ if scores_files:
         existing_df = pd.DataFrame(columns=['Sentence', 'Score'])
         start_index = 0
         initials = input(Fore.CYAN + "Enter your initials: ")
-        selected_file = initials + '_scores.xlsx'
+        selected_file = initials + '_T2_scores.xlsx'
 else:
     # No existing file, start fresh
     existing_df = pd.DataFrame(columns=['Sentence', 'Score'])
     start_index = 0
     selected_file = "new_scores.xlsx"
-    #
-    #
-    # selected_file = input(Fore.CYAN + "Do you want to continue annotating one of these files? Enter the filename or 'N' to start a new annotation: \n").strip().lower()
-    # if selected_file != 'n':
-    #     selected_file = find_file(scores_files, selected_file)
-    # if selected_file is not None and selected_file != 'n':
-    #     user_response = input(Fore.CYAN + "Continue annotating this file? (Y/N): " + selected_file + '\n').strip().lower()
-    #     if user_response == 'y':
-    #         results_df = pd.read_excel(selected_file)
-    #         last_sentence = results_df.iloc[-1]['Sentence']
-    #         # Find this sentence in the shuffled DataFrame
-    #         start_index = df[df.eq(last_sentence).any(1)].index[0] + 1
-    #     else:
-    #         results_df = pd.DataFrame(columns=['Sentence', 'Score'])
-    #         start_index = 0
-    #         selected_file = input(Fore.CYAN + "Enter new filename for annotation (e.g., initials_scores.xlsx): ")
-    # else:
-    #     # Start a new annotation process
-    #     results_df = pd.DataFrame(columns=['Sentence', 'Score'])
-    #     start_index = 0
-    #     selected_file = "new_scores.xlsx"  # Default or ask the user for a new name
 
 
 
@@ -134,7 +74,7 @@ output_filename = selected_file
 if output_filename == "new_scores.xlsx":
     # Ask for annotator's initials
     initials = input(Fore.CYAN + "Please enter your initials: ")
-    output_filename = f"{initials}_scores.xlsx"
+    output_filename = f"{initials}_T2_scores.xlsx"
     if output_filename in scores_files:
         output_filename = "new_" + output_filename
 
